@@ -1,0 +1,30 @@
+/* !footer */
+.footer{
+    background-color: #262936;
+    padding-block: 3.125rem;
+    font-size: .875rem;
+}
+
+.social-links a{
+    width: 40px;
+    height: 40px;
+    color: var(--blue);
+    background-color: #1e202b;
+    font-size: 1.25rem;
+    transition: all 0.4s;
+}
+
+.social-links a:hover{
+    color: white;
+    background-color: var(--blue);
+}
+
+.copyright p{
+    line-height: 1.3125rem;
+    color: white;
+    transition: all 0.4s;
+}
+
+.copyright p:hover{
+    color: var(--coolGray);
+}

@@ -1,0 +1,136 @@
+:root{
+    --blue:#009ad8;
+    --coolGray:rgb(191, 193, 200);
+}
+
+body{
+    font-family: "Roboto", sans-serif;
+    font-optical-sizing: auto;
+    background-color: #1E202B;
+    font-size: 16px;
+}
+
+a{
+    text-decoration: none;
+}
+
+li{
+    list-style: none;
+}
+
+input{
+    padding: 1.25rem 6.25rem 1.25rem 1.25rem;
+    background-color: #1e202b;
+    color: white;
+    outline: none;
+}
+
+input::placeholder{
+    color: var(--coolGray);
+}
+
+button{
+    padding: .875rem 1.25rem;
+    background-color: var(--blue);
+    right: 1%;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0px 1000px transparent inset !important;
+    -webkit-text-fill-color: white !important;
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+/* !main */
+.main{
+    background-image: url('..\\images\\banner.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+/* *search input */
+.search-input{
+    padding-block: 4.375rem;
+    font-size: .875rem;
+}
+
+.search-input input{
+    padding-right: 3.125rem;
+}
+
+.search-input button{
+    padding-inline: 2.5rem;
+    right: 5px;
+}
+
+/* *items */
+.item header{
+    padding: .625rem;
+    color: var(--coolGray);
+    background-color:rgba(0, 0, 0, 0.1);
+    top: 0;
+    left: 0;
+    right: 0;
+    border-radius: 5px 5px 0 0;
+}
+
+.main .row .col{
+    padding-inline: 0;
+    margin-bottom: 1.25rem;
+}
+
+.item{
+    padding: 5.875rem 1.25rem 1.875rem 1.25rem;
+    background-color: #323544;
+}
+
+.tomorrow{
+    background-color: #262936;
+}
+
+.col .today{
+    padding-top: 4.625rem;
+}
+
+.today .location-name{
+    color: var(--coolGray);
+    font-size: 1.125rem;
+}
+
+.today .temp{
+    font-size: 4.25rem;
+    margin-right: 1.875rem;
+}
+
+.condition-icon{
+    width: 90px;
+    height: 90px;
+    margin-bottom: 1.25rem;
+}
+
+.condition-text{
+    margin-block: 1.25rem;
+    font-size: .875rem;
+    line-height: 1.3125rem;
+    color: var(--blue);
+}
+
+.today span{
+    display: inline-block;
+    margin-right: 1.25rem;
+    color: var(--coolGray);
+}
+
+.today span img{
+    margin-right: .3125rem;
+}
+
+.min-temp{
+    color: var(--coolGray);
+}
+
+.max-temp{
+    font-size: 1.25rem;
+}
