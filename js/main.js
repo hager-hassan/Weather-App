@@ -1,13 +1,13 @@
 // !global vars
-let searchInput = document.getElementById('searchInput');
-let email = document.getElementById('email');
+const searchInput = document.getElementById('searchInput');
+const email = document.getElementById('email');
 
-let searchButton = document.getElementById('searchButton');
-let subscribeButton = document.getElementById('subscribeButton');
+const searchButton = document.getElementById('searchButton');
+const subscribeButton = document.getElementById('subscribeButton');
 
-let todayColumn = document.getElementById('todayColumn');
-let tomorrowColumn = document.getElementById('tomorrowColumn');
-let afterTomorrowColumn = document.getElementById('afterTomorrowColumn');
+const todayColumn = document.getElementById('todayColumn');
+const tomorrowColumn = document.getElementById('tomorrowColumn');
+const afterTomorrowColumn = document.getElementById('afterTomorrowColumn');
 
 const APIKey = '2ab58103c8f24b71a21214830252204';
 const weekDays = [
@@ -19,22 +19,96 @@ const months = [
 ];
 
 
-searchInput.addEventListener('input' , function(){
-    getCurrentWeather(searchInput.value);
-    forecast(searchInput.value);
-})
+searchInput.addEventListener('input' , debounce( function(){
+    if(searchInput.value.trim().length > 2){
+        fetchWeatherData(searchInput.value.trim().toLowerCase());
+    }
+} 
+, 500) )
 
 searchButton.addEventListener('click', function(){
-    getCurrentWeather(searchInput.value);
-    forecast(searchInput.value);
+    if(searchInput.value.trim().length > 2){
+        fetchWeatherData(searchInput.value.trim().toLowerCase());
+    }
 })
+
+// !to get el location
+function getUserLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.watchPosition(
+            (position) =>{
+                const lat = position.coords.latitude;
+                const lon = position.coords.longitude;
+
+                fetchWeatherData(`${lat},${lon}`);
+            },
+            (error) =>{
+                switch (error.code) {
+                    case error.PERMISSION_DENIED:
+                        alert("Permission to access location was denied.");
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        alert("Location information is currently unavailable.");
+                        break;
+                    case error.TIMEOUT:
+                        alert("The request to get user location timed out.");
+                        break;
+                    default:
+                        alert("An unknown error occurred while fetching location.");
+                        break;
+                }
+
+                fetchWeatherData('cairo');
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 86400000 // one day
+            }
+        )
+    } else {
+        alert("Your browser does not support geolocation.");
+        fetchWeatherData('cairo');
+    }
+}
+
+// !3ala4an lw feh requests kiter
+function debounce(func, delay = 500) {
+    let timer;
+
+    return function(...args) {
+        clearTimeout(timer);
+
+        timer = setTimeout(() => {
+            func.apply(this, args);
+        }, delay);
+    };
+}
+
+// !main function to fetch weather data
+async function fetchWeatherData(city){
+    try{
+        await Promise.all([
+            getCurrentWeather(city),
+            forecast(city)
+        ]);
+    }
+    catch(error){
+        alert(error);
+    }
+}
 
 // !for current 
 async function getCurrentWeather(city){
-    let url = `https://api.weatherapi.com/v1/current.json?key=${APIKey}&q=${city}`;
+    try{
+        let url = `https://api.weatherapi.com/v1/current.json?key=${APIKey}&q=${city}`;
 
     let result = await fetch(url);
     let data = await result.json();
+
+    if (!data || data.error) {
+        throw new Error(data?.error?.message || "Weather data error");
+    }    
 
     let date = new Date(data.location.localtime);
 
@@ -68,21 +142,31 @@ async function getCurrentWeather(city){
                             </div>
                         </div>
                     </div>`
+    }
+    catch(error){
+        console.error(`Error in getCurrentWeather: ${error}`);
+        throw error;
+    }
 }
 
 // !for tomorrow and after tomorrow
 async function forecast(city){
-    const url = `https://api.weatherapi.com/v1/forecast.json?key=${APIKey}&q=${city}&days=2`;
+    try{
+        const url = `https://api.weatherapi.com/v1/forecast.json?key=${APIKey}&q=${city}&days=3`;
 
     let result = await fetch(url);
     let data = await result.json();
 
-    let tomorrowDate = new Date(data.forecast.forecastday[0].date);
-    let afterTomorrowDate = new Date(data.forecast.forecastday[1].date);
+    if (!data || data.error) {
+        throw new Error(data?.error?.message || "Weather data error");
+    }    
+
+    let tomorrowDate = new Date(data.forecast.forecastday[1].date);
+    let afterTomorrowDate = new Date(data.forecast.forecastday[2].date);
 
     tomorrowColumn.innerHTML = `<div class="item tomorrow rounded position-relative">
                         <header class="position-absolute">
-                            <span class="day text-center d-block">${weekDays[tomorrowDate.getDay() + 1]}</span>
+                            <span class="day text-center d-block">${weekDays[tomorrowDate.getDay()]}</span>
                         </header>
                         <div class="d-flex justify-content-center align-items-center mb-4">
                             <img src="https:${data.forecast.forecastday[0].day.condition.icon}">
@@ -94,7 +178,7 @@ async function forecast(city){
 
     afterTomorrowColumn.innerHTML = `<div class="item after-tomorrow rounded position-relative">
                         <header class="position-absolute">
-                            <span class="day text-center d-block">${weekDays[afterTomorrowDate.getDay() + 1]}</span>
+                            <span class="day text-center d-block">${weekDays[afterTomorrowDate.getDay()]}</span>
                         </header>
                         <div class="d-flex justify-content-center align-items-center mb-4">
                             <img src="https:${data.forecast.forecastday[1].day.condition.icon}">
@@ -102,7 +186,12 @@ async function forecast(city){
                         <p class="text-center mb-0 fw-bold text-white max-temp">${data.forecast.forecastday[1].day.mintemp_c}<sup>o</sup>C</p>
                         <p class="text-center mb-0 fw-light min-temp">${data.forecast.forecastday[1].day.mintemp_c}<sup>o</sup></p>
                         <p class="condition-text fw-light text-center">${data.forecast.forecastday[1].day.condition.text}</p>
-                    </div>`              
+                    </div>`    
+    }
+    catch(error){
+        console.error(`Error in forecast: ${error}`);
+        throw error;
+    }          
 }
 
 // !email validation
@@ -119,5 +208,4 @@ subscribeButton.addEventListener('click' , function(event){
     email.value = '';
 })
 
-getCurrentWeather('cairo');
-forecast('cairo');
+getUserLocation();
