@@ -24,7 +24,7 @@ searchInput.addEventListener('input' , debounce( function(){
         fetchWeatherData(searchInput.value.trim().toLowerCase());
     }
 } 
-, 500) )
+, 1000) )
 
 searchButton.addEventListener('click', function(){
     if(searchInput.value.trim().length > 2){
